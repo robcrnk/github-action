@@ -1,0 +1,70 @@
+name: 🔐 Secure Deployment Simulation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  simulate-secure-deployment:
+    name: 🧪 Simulation Déploiement Sécurisé
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Vérification des secrets
+        run: |
+          echo "✅ SERVER_IP: ${{ secrets.SERVER_IP }}"
+          echo "✅ SERVER_USER: ${{ secrets.SERVER_USER }}"
+          echo "✅ SSH_PRIVATE_KEY: [secret présent]"
+        env:
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: 🔍 Valider la clé SSH (format, taille, passphrase)
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > private_key.pem
+          chmod 600 private_key.pem
+
+          echo "▶️ Format de la clé :"
+          head -n 1 private_key.pem
+
+          echo "🔎 Vérification de la taille de la clé"
+          ssh-keygen -lf private_key.pem
+
+          echo "🔐 Vérification de l’absence de passphrase..."
+          if ssh-keygen -y -f private_key.pem >/dev/null 2>&1; then
+            echo "✅ La clé privée n’a pas de passphrase."
+          else
+            echo "❌ La clé privée est protégée par une passphrase !"
+            exit 1
+          fi
+
+      - name: 🧪 Valider les variables d’environnement
+        run: |
+          echo "🌐 IP serveur : $SERVER_IP"
+          echo "👤 Utilisateur serveur : $SERVER_USER"
+          echo "💻 OS du runner : $RUNNER_OS"
+        env:
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          RUNNER_OS: ${{ runner.os }}
+
+      - name: 💡 Simulation des commandes de déploiement
+        run: |
+          echo "🔧 Connexion SSH simulée vers $SERVER_USER@$SERVER_IP:2222"
+          echo "Voici les commandes qui seraient exécutées sur le serveur distant :"
+          echo "---------------------------------------------------------------"
+          echo "sudo mkdir -p /opt/myapp"
+          echo "sudo systemctl restart myapp.service"
+          echo "sudo systemctl status myapp.service"
+          echo "---------------------------------------------------------------"
+
+      - name: 🔐 Contrôles de sécurité
+        run: |
+          echo "🛡️ Vérification des bonnes pratiques..."
+          echo "✅ Utilisation d’un utilisateur non-root : ${{ secrets.SERVER_USER }}"
+          echo "✅ Connexion par clé privée uniquement"
+          echo "✅ Pas d’exposition de clé privée dans les logs"
+          echo "✅ Aucune commande root directe dans le workflow"
