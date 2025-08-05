@@ -18,3 +18,14 @@ jobs:
 
       - name: Display index.html content
         run: cat ./app/index.html
+
+      - name: Afficher les variables et secrets
+        run: |
+          echo "▶️ Affichage des secrets et variables d’environnement"
+          echo "FAKE_API_TOKEN: ${{ secrets.FAKE_API_TOKEN }}"
+          echo "ENV_TYPE: ${{ secrets.ENV_TYPE }}"
+          echo "VARIABLE_CUSTOM: $VARIABLE_CUSTOM"
+          echo "RUNNER_OS: $RUNNER_OS"
+        env:
+          VARIABLE_CUSTOM: "CI_DEMO"
+          RUNNER_OS: ${{ runner.os }}
