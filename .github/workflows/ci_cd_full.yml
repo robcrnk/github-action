@@ -30,6 +30,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install Ansible (if not already installed)
+        run: |
+          if ! command -v ansible >/dev/null 2>&1; then
+            sudo apt update
+            sudo apt install -y python3-pip
+            pip3 install ansible
+          fi
+
       - name: Run Ansible Playbook (local deploy)
         run: |
           ansible-playbook -i "localhost," ansible/deploy.yml -c local
