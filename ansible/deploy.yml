@@ -4,6 +4,9 @@
   connection: local
   become: true
 
+  vars:
+    server_ip: "127.0.0.1"
+
   tasks:
     - name: Installer Nginx
       apt:
@@ -25,7 +28,7 @@
 
     - name: Copier la configuration Nginx depuis un template
       template:
-        src: nginx_vhost.conf.j2
+        src: templates/nginx_vhost.conf.j2
         dest: /etc/nginx/sites-available/tp-app.conf
 
     - name: Activer la configuration Nginx
