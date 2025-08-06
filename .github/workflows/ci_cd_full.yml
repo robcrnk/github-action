@@ -32,4 +32,4 @@ jobs:
 
       - name: Run Ansible Playbook (local deploy)
         run: |
-          ansible-playbook -i localhost, ansible/deploy.yml --connection=local
+          ansible-playbook -i "localhost," ansible/deploy.yml -c local
