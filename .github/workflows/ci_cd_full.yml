@@ -9,7 +9,7 @@ on:
 jobs:
   build-and-test:
     name: 🧪 Build and Test App
-    runs-on: self-hosted  # ✅ Self-hosted runner installé sur ta VM
+    runs-on: self-hosted
 
     steps:
       - name: Checkout repository
@@ -23,26 +23,13 @@ jobs:
 
   deploy:
     name: 🚀 Deploy with Ansible
-    runs-on: self-hosted  # ✅ Self-hosted runner
+    runs-on: self-hosted
     needs: build-and-test
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ✅ Plus besoin d'agent SSH externe, car la clé est déjà accessible localement
-      - name: Créer fichier inventory.ini
+      - name: Run Ansible Playbook (local deploy)
         run: |
-          echo "[webserver]" > inventory.ini
-          echo "127.0.0.1 ansible_connection=local" >> inventory.ini
-          chmod 600 inventory.ini
-
-      - name: Installer Ansible
-        run: |
-          sudo apt update
-          sudo apt install -y python3-pip
-          pip3 install ansible
-
-      - name: Exécuter le playbook Ansible
-        run: |
-          ansible-playbook -i inventory.ini ansible/deploy.yml
+          ansible-playbook -i localhost, ansible/deploy.yml --connection=local
