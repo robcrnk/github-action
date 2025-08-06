@@ -1,11 +1,8 @@
 ---
 - name: Déploiement de l'application web avec Nginx
-  hosts: webserver
+  hosts: localhost
+  connection: local
   become: true
-  vars:
-    app_src: ../app
-    app_dest: /var/www/html/tp-app
-    server_ip: "{{ ansible_host }}"
 
   tasks:
     - name: Installer Nginx
@@ -16,19 +13,19 @@
 
     - name: Créer le répertoire de destination
       file:
-        path: "{{ app_dest }}"
+        path: /var/www/html/tp-app
         state: directory
         mode: '0755'
 
     - name: Copier les fichiers de l'application
       copy:
-        src: "{{ app_src }}/"
-        dest: "{{ app_dest }}/"
+        src: app/
+        dest: /var/www/html/tp-app/
         mode: '0644'
 
     - name: Copier la configuration Nginx depuis un template
       template:
-        src: nginx_vhost.conf.j2
+        src: ansible/nginx_vhost.conf.j2
         dest: /etc/nginx/sites-available/tp-app.conf
 
     - name: Activer la configuration Nginx
