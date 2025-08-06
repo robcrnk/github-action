@@ -22,7 +22,7 @@ jobs:
         run: cat ./app/index.html
 
   deploy:
-    name: 🚀 Deploy with Ansible
+    name: 🚀 Simulated Deploy with Ansible
     runs-on: ubuntu-latest
     needs: build-and-test
 
@@ -30,26 +30,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup SSH agent
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Setup SSH agent (simulé)
+        run: |
+          echo "🔐 Simulation de chargement de clé SSH depuis secret"
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | head -n 2
 
-      - name: Create inventory file
+      - name: Create inventory file (simulé)
         run: |
           echo "[webserver]" > inventory.ini
-          echo "${{ secrets.SERVER_IP }} ansible_user=${{ secrets.SERVER_USER }} ansible_ssh_private_key_file=~/.ssh/id_rsa ansible_port=2222" >> inventory.ini
-          chmod 600 inventory.ini
+          echo "${{ secrets.SERVER_IP }} ansible_user=${{ secrets.SERVER_USER }}" >> inventory.ini
+          echo "✅ inventory.ini généré (simulé)"
 
-      - name: Install Ansible
+      - name: Install Ansible (simulé)
         run: |
-          sudo apt update
-          sudo apt install -y python3-pip
-          pip3 install ansible
+          echo "📦 Simulation de l'installation d'Ansible via pip"
+          echo "ansible==7.0.0"
 
-      - name: Run Ansible Playbook
-        env:
-          SERVER_IP: ${{ secrets.SERVER_IP }}
-          SERVER_USER: ${{ secrets.SERVER_USER }}
+      - name: Simulate Ansible Playbook Execution
         run: |
-          ansible-playbook -i inventory.ini ansible/deploy.yml
+          echo "🚀 Simulation de l'exécution du playbook Ansible"
+          echo "ansible-playbook -i inventory.ini ansible/deploy.yml"
+          echo "💡 Déploiement simulé terminé avec succès"
