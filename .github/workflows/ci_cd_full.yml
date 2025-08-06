@@ -9,7 +9,7 @@ on:
 jobs:
   build-and-test:
     name: 🧪 Build and Test App
-    runs-on: ubuntu-latest
+    runs-on: self-hosted  # ✅ Self-hosted runner installé sur ta VM
 
     steps:
       - name: Checkout repository
@@ -22,32 +22,27 @@ jobs:
         run: cat ./app/index.html
 
   deploy:
-    name: 🚀 Simulated Deploy with Ansible
-    runs-on: ubuntu-latest
+    name: 🚀 Deploy with Ansible
+    runs-on: self-hosted  # ✅ Self-hosted runner
     needs: build-and-test
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup SSH agent (simulé)
-        run: |
-          echo "🔐 Simulation de chargement de clé SSH depuis secret"
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" | head -n 2
-
-      - name: Create inventory file (simulé)
+      # ✅ Plus besoin d'agent SSH externe, car la clé est déjà accessible localement
+      - name: Créer fichier inventory.ini
         run: |
           echo "[webserver]" > inventory.ini
-          echo "${{ secrets.SERVER_IP }} ansible_user=${{ secrets.SERVER_USER }}" >> inventory.ini
-          echo "✅ inventory.ini généré (simulé)"
+          echo "127.0.0.1 ansible_connection=local" >> inventory.ini
+          chmod 600 inventory.ini
 
-      - name: Install Ansible (simulé)
+      - name: Installer Ansible
         run: |
-          echo "📦 Simulation de l'installation d'Ansible via pip"
-          echo "ansible==7.0.0"
+          sudo apt update
+          sudo apt install -y python3-pip
+          pip3 install ansible
 
-      - name: Simulate Ansible Playbook Execution
+      - name: Exécuter le playbook Ansible
         run: |
-          echo "🚀 Simulation de l'exécution du playbook Ansible"
-          echo "ansible-playbook -i inventory.ini ansible/deploy.yml"
-          echo "💡 Déploiement simulé terminé avec succès"
+          ansible-playbook -i inventory.ini ansible/deploy.yml
