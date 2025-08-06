@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-and-test:
-    name: 🧪 Build and Test App
+    name: Build and Test App
     runs-on: self-hosted
 
     steps:
@@ -22,7 +22,7 @@ jobs:
         run: cat ./app/index.html
 
   deploy:
-    name: 🚀 Deploy with Ansible
+    name: Deploy with Ansible
     runs-on: self-hosted
     needs: build-and-test
 
